@@ -5,6 +5,9 @@ import DropdownMenu from './DropdownMenu';
 import { DarkModeSwitch } from 'react-toggle-dark-mode';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import AboutUs from './aboutUs'; // Ensure this component exists and is correctly imported
+import './sales_forcast';
+import SalesForecast from './sales_forcast';
+import SimilarProductPrediction from './similar_product_prediction'; // Ensure this component exists and is correctly imported
 
 const App = () => {
   const [isAIFormVisible, setAIFormVisible] = useState(false);
@@ -30,12 +33,14 @@ const App = () => {
         <nav>
           <Link to="/">Home</Link>
           <Link to="/aboutUs">About Us</Link>
-          <Link to="/profiles">Profiles</Link>
+          <Link to="/sales_forcast">Sales Forecast</Link>
+          <Link to="/similar_product_prediction">Similar Product Prediction</Link>
           <DarkModeSwitch style={{ marginBottom: '2rem' }} checked={isDarkMode} onChange={toggleDarkMode} size={30} />
         </nav>
         <Routes>
           <Route path="/aboutUs" element={<AboutUs />} />
-          <Route path="/profiles" element={<div>Profiles Page</div>} />
+          <Route path="/sales_forcast" element={<SalesForecast/>} />
+          <Route path="/similar_product_prediction" element={<SimilarProductPrediction />} />
           <Route path="/" element={
             <>
               <main>

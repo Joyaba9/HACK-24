@@ -37,9 +37,6 @@ const DropdownMenu = ({ onSelect }) => {
       <button className="dropbtn">{selectedOption || 'Select Option'}</button>
       <div className="dropdown-content">
         <a onClick={() => handleOptionClick('customer_id')}>Customer ID</a>
-        <a onClick={() => handleOptionClick('order_date')}>Order Date</a>
-        <a onClick={() => handleOptionClick('order_id')}>Order ID</a>
-        <a onClick={() => handleOptionClick('sales')}>Sales</a>
         <a onClick={() => handleOptionClick('state')}>State</a>
         <a onClick={() => handleOptionClick('city')}>City</a>
         <a onClick={() => handleOptionClick('segment')}>Segment</a>

@@ -1,59 +1,92 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./similar_product_prediction.css";
-import similar_products from "./similar_product_data.json";
-import { useState } from "react";
-
+import productData from "./similar_product_data.json";
+import Plotly from "plotly.js-dist";
+import './App.css';
 
 const SimilarProductPrediction = () => {
-    const [product, setProduct] = useState("Furniture");
-    const [category, setCategory] = useState("Bookcases");
-    const [similarProducts, setSimilarProducts] = useState([]);
-    
+    const [category, setCategory] = useState("");
+    const [subCategory, setSubCategory] = useState("");
+    const [product, setProduct] = useState("");
+    const [subCategories, setSubCategories] = useState([]);
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        if (category && productData[category]) {
+            setSubCategories(Object.keys(productData[category]));
+            console.log(productData[category]);
+        }
+    }, [category]);
+
+    // useEffect(() => {
+    //     if (category && subCategory && productData[category][subCategory]) {
+    //         setProducts(Object.keys(productData[category][subCategory]['product_names']));
+    //         console.log(productData[category][subCategory]['product_names'], "*****************************");
+    //     }
+    // }, [category, subCategory]);
+    useEffect(() => {
+        if (category && subCategory && productData[category][subCategory]) {
+          setProducts(productData[category][subCategory]['product_names']);
+          console.log(productData[category][subCategory]['product_names'], "*****************************");
+        }
+      }, [category, subCategory]);
+
     const handleProductChange = (e) => {
         setProduct(e.target.value);
-    };
     
-    const handleCategoryChange = (e) => {
-        setCategory(e.target.value);
-    };
-    
-    const handlePredictClick = () => {
-        // Get similar products from the JSON file
-        const products = similar_products[product][category];
-        setSimilarProducts(products);
-    };
-    
+        fetch('http://localhost:5000/similar_products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ category, subCategory, product: e.target.value }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          // handle the response data
+          console.log(data);
+          Plotly.newPlot('scatterplot-container1', data, { title : 'Similar Product Prediction' });
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+      };
+
     return (
         <div className="similar-product-container">
-        <h1>Similar Product Prediction</h1>
-        <div className="input-container">
-            <label htmlFor="product">Product:</label>
-            <select id="product" value={product} onChange={handleProductChange}>
-            {Object.keys(similar_products).map((product) => (
-                <option key={product} value={product}>
-                {product}
-                </option>
-            ))}
-            </select>
-            <label htmlFor="category">Category:</label>
-            <select id="category" value={category} onChange={handleCategoryChange}>
-            {Object.keys(similar_products[product]).map((category) => (
-                <option key={category} value={category}>
-                {category}
-                </option>
-            ))}
-            </select>
-            <button onClick={handlePredictClick}>Predict</button>
-        </div>
-        <div className="prediction-container">
-            <h2>Similar Products</h2>
-            <ul>
-            {similarProducts.map((product, index) => (
-                <li key={index}>{product}</li>
-            ))}
-            </ul>
-        </div>
+            <h1>Similar Product Prediction</h1>
+            <div className="input-container">
+                <label htmlFor="category">Category:</label>
+                <select id="category" value={category} onChange={(e) => setCategory(e.target.value)}>
+                    {Object.keys(productData).map((category) => (
+                        <option key={category} value={category}>
+                            {category}
+                        </option>
+                    ))}
+                </select>
+
+                <label htmlFor="subCategory">Sub-Category:</label>
+                <select id="subCategory" value={subCategory} onChange={(e) => setSubCategory(e.target.value)}>
+                    {subCategories.map((subCategory) => (
+                        <option key={subCategory} value={subCategory}>
+                            {subCategory}
+                        </option>
+                    ))}
+                </select>
+
+                <label htmlFor="product">Product:</label>
+                <select id="product" value={product} onChange={handleProductChange}>
+                    {products.map((product, index) => (
+                        <option key={index} value={product}>
+                            {product}
+                        </option>
+                    ))}
+                </select>
+                <div id="scatterplot-container1"></div>
+            </div>
         </div>
     );
-    };
-    
+
+};
+
+export default SimilarProductPrediction;

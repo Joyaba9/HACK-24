@@ -17,9 +17,20 @@ const ChatPopup = ({ isVisible, onClose }) => {
     const newMessage = { type: sender, message };
     setConversation(prev => [...prev, newMessage]);
     if (sender === 'user') {
-      setTimeout(() => {
-        setConversation(prev => [...prev, { type: 'AI', message: "Here's a simulated response for your query." }]);
-      }, 1000);
+      fetch('http://localhost:5000/generate_text', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: message }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          setConversation(prev => [...prev, { type: 'AI', message: data.text }]);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
     }
   };
 
